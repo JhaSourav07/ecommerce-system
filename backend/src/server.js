@@ -1,12 +1,23 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
-import productRouter from './routes/productRoutes.js'; // Import our new routing layout
+import productRouter from './routes/productRoutes.js'; 
+import cors from "cors";
+
+
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+
+const FRONTEND_URL = process.env.FRONTEND_URL;
+app.use(cors({
+  origin: FRONTEND_URL || '*', // For testing. Replace with your actual Vercel URL once deployed
+  methods: ['GET'],
+  allowedHeaders: ['Content-Type']
+}));
 
 connectDB();
 
