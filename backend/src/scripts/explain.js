@@ -11,7 +11,6 @@ const runDiagnostics = async () => {
 
     console.log('\n--- 🎯 SCENARIO 1: OPTIMIZED CURSOR QUERY (Using Compound Index) ---');
     
-    // We append .explain("executionStats") to capture internal database metrics
     const optimizedPlan = await Product.find({ category: 'electronics' })
       .sort({ createdAt: -1, _id: -1 })
       .limit(50)
@@ -27,7 +26,7 @@ const runDiagnostics = async () => {
     
     try {
       const unoptimizedPlan = await Product.find({ category: 'electronics' })
-        .sort({ price: 1 }) // Sorting by price breaks our compound index structure!
+        .sort({ price: 1 })
         .limit(50)
         .explain('executionStats');
         

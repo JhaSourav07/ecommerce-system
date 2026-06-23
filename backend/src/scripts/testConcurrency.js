@@ -10,7 +10,6 @@ const runConcurrencyTest = async () => {
   try {
     console.log('🧪 Commencing Concurrency & Data Consistency Simulation...');
     
-    // 1. Fetch Page 1 via our actual live HTTP API endpoint
     console.log('📡 Requesting Page 1 from API...');
     const page1Response = await fetch(API_URL);
     const page1Result = await page1Response.json();
@@ -21,7 +20,6 @@ const runConcurrencyTest = async () => {
     console.log(`✅ Page 1 loaded. Retrieved ${page1Products.length} items.`);
     const page1Ids = new Set(page1Products.map(p => p._id));
 
-    // 2. Open a direct link to the DB to simulate a background write process
     await mongoose.connect(process.env.MONGO_URI);
     console.log('\n💽 Simulating background concurrent activity...');
     console.log('📥 Inserting 50 new premium products into the "electronics" category...');
@@ -32,13 +30,12 @@ const runConcurrencyTest = async () => {
         name: `Concurrent Flash Product ${i}`,
         description: 'Simulated real-time inventory mutation asset.',
         price: 99.99,
-        category: 'electronics' // Born with current Date.now() timestamp
+        category: 'electronics'
       });
     }
     await Product.insertMany(modernStamps);
     console.log('⚡ 50 new products successfully committed to disk.');
 
-    // 3. Fetch Page 2 using our saved opaque cursor anchor
     console.log(`\n📡 Requesting Page 2 using cursor anchor: [${nextCursor.substring(0, 15)}...]`);
     const page2Response = await fetch(`${API_URL}&nextCursor=${nextCursor}`);
     const page2Result = await page2Response.json();
@@ -46,7 +43,6 @@ const runConcurrencyTest = async () => {
     
     console.log(`✅ Page 2 loaded. Retrieved ${page2Products.length} items.`);
 
-    // 4. Assert and validate the core engineering requirements
     console.log('\n📊 Running Architectural Assertions...');
     let duplicateCount = 0;
     
@@ -63,7 +59,6 @@ const runConcurrencyTest = async () => {
       console.log(`🚨 FAIL: encountered ${duplicateCount} broken item shifts.`);
     }
 
-    // 5. Clean up the concurrent simulation items so our dataset remains pristine
     console.log('\n🧹 Clearing simulated concurrent background assets...');
     await Product.deleteMany({ name: { $regex: 'Concurrent Flash Product' } });
     console.log('✨ Database state normalized.');

@@ -5,7 +5,6 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
   : 'https://ecommerce-system-abkr.onrender.com';
 
 export default function App() {
-  // Helper to read initial params from the URL search parameters
   const getUrlParams = () => {
     const params = new URLSearchParams(window.location.search);
     return {
@@ -25,16 +24,13 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(true);
 
-  // Keep a history of cursors for the previous page backward navigation
   const [cursorHistory, setCursorHistory] = useState(['']);
 
-  // Sync state with browser back/forward buttons (popstate event)
   useEffect(() => {
     const handlePopState = () => {
       const parsed = getUrlParams();
       setUrlParams(parsed);
       
-      // Reset navigation history if navigating back to first page
       if (!parsed.cursor) {
         setCursorHistory(['']);
       }
@@ -43,7 +39,6 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Fetch catalog products whenever category, cursor, or limit parameter changes
   useEffect(() => {
     fetchProducts();
   }, [urlParams.category, urlParams.cursor, urlParams.limit]);
@@ -83,7 +78,6 @@ export default function App() {
     }
   };
 
-  // Pushes changes into the browser URL and updates React state
   const updateUrl = (updates) => {
     const params = new URLSearchParams(window.location.search);
     
@@ -113,12 +107,12 @@ export default function App() {
   };
 
   const handleCategoryChange = (newCat) => {
-    setCursorHistory(['']); // Reset history stack
+    setCursorHistory(['']);
     updateUrl({ category: newCat, cursor: '' });
   };
 
   const handleLimitChange = (newLimit) => {
-    setCursorHistory(['']); // Reset cursor stack since page size changed
+    setCursorHistory(['']);
     updateUrl({ limit: newLimit, cursor: '' });
   };
 
@@ -143,7 +137,6 @@ export default function App() {
     }
   };
 
-  // Cart operations
   const addToCart = (product) => {
     setCart(prev => {
       const existing = prev.find(item => item._id === product._id);
@@ -167,7 +160,6 @@ export default function App() {
     }
   };
 
-  // Decode Base64 cursor anchor values for displaying
   const getDecodedCursor = () => {
     if (!urlParams.cursor) return null;
     try {
@@ -179,7 +171,6 @@ export default function App() {
 
   const decodedCursor = getDecodedCursor();
 
-  // Mongoose Query representation helper
   const getQueryJSON = () => {
     const query = {};
     if (urlParams.category) query.category = urlParams.category;
@@ -200,7 +191,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Header */}
       <header>
         <div>
           <h1>E-Commerce Practice Site</h1>
@@ -214,7 +204,6 @@ export default function App() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          {/* Dynamic Page Limit Selection Dropdown */}
           <select 
             value={urlParams.limit} 
             onChange={(e) => handleLimitChange(e.target.value)}
@@ -236,7 +225,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Category Selection Bar */}
       <div className="filters">
         {['', 'electronics', 'apparel', 'home', 'books', 'sports'].map(cat => (
           <button
@@ -249,12 +237,8 @@ export default function App() {
         ))}
       </div>
 
-      {/* Grid and Cart Content */}
       <div className={`main-content ${isCartOpen ? 'with-sidebar' : ''}`}>
-        
-        {/* Products Catalogue */}
         <div>
-          {/* Next/Prev Page navigation controls placed ABOVE the catalog page */}
           {(hasNextPage || urlParams.cursor) && !isLoading && (
             <div className="pagination-container" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', justifyContent: 'flex-start' }}>
               <button 
@@ -301,7 +285,6 @@ export default function App() {
           )}
         </div>
 
-        {/* Sidebar Cart */}
         {isCartOpen && (
           <div className="cart-sidebar">
             <h3 style={{ margin: 0, borderBottom: '1px solid #334155', paddingBottom: '0.5rem' }}>
@@ -351,12 +334,11 @@ export default function App() {
         )}
       </div>
 
-      {/* Embedded Debugger Pane */}
       {isDebugOpen && (
         <div className="debug-section" style={{ marginTop: '2rem' }}>
           <div className="debug-title">Cursor Pagination Status</div>
           <div>Total Loaded Products on Current Page: <strong>{products.length}</strong></div>
-          <div>Active Page Size (Limit): <strong>{urlParams.limit}</strong></div>
+          <div>Active Page Size (Limit): <strong>{urlParams.limit || 'Default'}</strong></div>
           <div>Next Page Available: <strong>{hasNextPage ? 'Yes' : 'No'}</strong></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.5rem' }}>
             <span>Active URL Cursor Parameter:</span>

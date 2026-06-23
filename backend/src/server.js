@@ -14,17 +14,15 @@ app.use(express.json());
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
 app.use(cors({
-  origin: FRONTEND_URL || '*', // For testing. Replace with your actual Vercel URL once deployed
+  origin: FRONTEND_URL || '*',
   methods: ['GET'],
   allowedHeaders: ['Content-Type']
 }));
 
 connectDB();
 
-// Mount API Resource Routes
 app.use('/api/v1/products', productRouter);
 
-// Base Health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy', timestamp: new Date() });
 });

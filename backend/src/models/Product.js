@@ -28,9 +28,6 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-// index for optimization of retriving large datasets
-// category: 1 -> sorted in alphabetical order
-// createdAt: -1 -> sorted in chronological order (newest first)
 productSchema.index({ category: 1, createdAt: -1, _id: -1 });
 
 const Product = mongoose.model('Product', productSchema);
