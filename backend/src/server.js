@@ -29,5 +29,5 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🔥 Backend engine active on port ${PORT}`);
+  console.log(`Backend engine active on port ${PORT}`);
 });

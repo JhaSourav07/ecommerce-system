@@ -6,10 +6,10 @@ dotenv.config();
 
 const runDiagnostics = async () => {
   try {
-    console.log('⏳ Connecting to cluster for profiling...');
+    console.log('Connecting to cluster for profiling...');
     await mongoose.connect(process.env.MONGO_URI);
 
-    console.log('\n--- 🎯 SCENARIO 1: OPTIMIZED CURSOR QUERY (Using Compound Index) ---');
+    console.log('\n--- SCENARIO 1: OPTIMIZED CURSOR QUERY (Using Compound Index) ---');
     
     const optimizedPlan = await Product.find({ category: 'electronics' })
       .sort({ createdAt: -1, _id: -1 })
@@ -17,12 +17,12 @@ const runDiagnostics = async () => {
       .explain('executionStats');
 
     const stats = optimizedPlan.executionStats;
-    console.log(`✅ Strategy Stage: ${stats.executionStages.stage}`); 
-    console.log(`📦 Documents Returned: ${stats.nReturned}`);
-    console.log(`🔍 Total Documents Read From Disk: ${stats.totalDocsExamined}`);
-    console.log(`⏱️ Server Execution Time: ${stats.executionTimeMillis} ms`);
+    console.log(`Strategy Stage: ${stats.executionStages.stage}`); 
+    console.log(`Documents Returned: ${stats.nReturned}`);
+    console.log(`Total Documents Read From Disk: ${stats.totalDocsExamined}`);
+    console.log(`Server Execution Time: ${stats.executionTimeMillis} ms`);
 
-    console.log('\n--- ⚠️ SCENARIO 2: UNOPTIMIZED SORT QUERY (Violating Index Structure) ---');
+    console.log('\n--- SCENARIO 2: UNOPTIMIZED SORT QUERY (Violating Index Structure) ---');
     
     try {
       const unoptimizedPlan = await Product.find({ category: 'electronics' })
@@ -31,17 +31,17 @@ const runDiagnostics = async () => {
         .explain('executionStats');
         
       const badStats = unoptimizedPlan.executionStats;
-      console.log(`❌ Strategy Stage: ${badStats.executionStages.stage}`);
-      console.log(`⏱️ Server Execution Time: ${badStats.executionTimeMillis} ms`);
+      console.log(`Strategy Stage: ${badStats.executionStages.stage}`);
+      console.log(`Server Execution Time: ${badStats.executionTimeMillis} ms`);
     } catch (err) {
-      console.log(`💥 Expected Crash: ${err.message}`);
+      console.log(`Expected Crash: ${err.message}`);
     }
 
   } catch (error) {
     console.error('Diagnostic error:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('\n🔌 Profiler disconnected.');
+    console.log('\nProfiler disconnected.');
     process.exit(0);
   }
 };

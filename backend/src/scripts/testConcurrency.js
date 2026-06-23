@@ -8,21 +8,21 @@ const API_URL = 'http://localhost:5000/api/v1/products?category=electronics&limi
 
 const runConcurrencyTest = async () => {
   try {
-    console.log('🧪 Commencing Concurrency & Data Consistency Simulation...');
+    console.log('Commencing Concurrency & Data Consistency Simulation...');
     
-    console.log('📡 Requesting Page 1 from API...');
+    console.log('Requesting Page 1 from API...');
     const page1Response = await fetch(API_URL);
     const page1Result = await page1Response.json();
     
     const page1Products = page1Result.data;
     const nextCursor = page1Result.pagination.nextCursor;
     
-    console.log(`✅ Page 1 loaded. Retrieved ${page1Products.length} items.`);
+    console.log(`Page 1 loaded. Retrieved ${page1Products.length} items.`);
     const page1Ids = new Set(page1Products.map(p => p._id));
 
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('\n💽 Simulating background concurrent activity...');
-    console.log('📥 Inserting 50 new premium products into the "electronics" category...');
+    console.log('\nSimulating background concurrent activity...');
+    console.log('Inserting 50 new products into the "electronics" category...');
     
     const modernStamps = [];
     for (let i = 0; i < 50; i++) {
@@ -34,40 +34,40 @@ const runConcurrencyTest = async () => {
       });
     }
     await Product.insertMany(modernStamps);
-    console.log('⚡ 50 new products successfully committed to disk.');
+    console.log('50 new products successfully committed to disk.');
 
-    console.log(`\n📡 Requesting Page 2 using cursor anchor: [${nextCursor.substring(0, 15)}...]`);
+    console.log(`\nRequesting Page 2 using cursor anchor: [${nextCursor.substring(0, 15)}...]`);
     const page2Response = await fetch(`${API_URL}&nextCursor=${nextCursor}`);
     const page2Result = await page2Response.json();
     const page2Products = page2Result.data;
     
-    console.log(`✅ Page 2 loaded. Retrieved ${page2Products.length} items.`);
+    console.log(`Page 2 loaded. Retrieved ${page2Products.length} items.`);
 
-    console.log('\n📊 Running Architectural Assertions...');
+    console.log('\nRunning Architectural Assertions...');
     let duplicateCount = 0;
     
     for (const product of page2Products) {
       if (page1Ids.has(product._id)) {
         duplicateCount++;
-        console.error(`❌ DUPLICATE DETECTED: Product ID ${product._id} appeared on both pages!`);
+        console.error(`DUPLICATE DETECTED: Product ID ${product._id} appeared on both pages!`);
       }
     }
 
     if (duplicateCount === 0) {
-      console.log('🎉 CRITICAL REQUIREMENT MET: Zero duplicate products encountered across pages!');
+      console.log('CRITICAL REQUIREMENT MET: Zero duplicate products encountered across pages!');
     } else {
-      console.log(`🚨 FAIL: encountered ${duplicateCount} broken item shifts.`);
+      console.log(`FAIL: encountered ${duplicateCount} broken item shifts.`);
     }
 
-    console.log('\n🧹 Clearing simulated concurrent background assets...');
+    console.log('\nClearing simulated concurrent background assets...');
     await Product.deleteMany({ name: { $regex: 'Concurrent Flash Product' } });
-    console.log('✨ Database state normalized.');
+    console.log('Database state normalized.');
 
   } catch (error) {
-    console.error('💥 Test pipeline failed with error:', error.message);
+    console.error('Test pipeline failed with error:', error.message);
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Simulation engine deactivated.');
+    console.log('Simulation engine deactivated.');
     process.exit(0);
   }
 };

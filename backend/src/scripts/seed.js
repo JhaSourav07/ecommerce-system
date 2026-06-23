@@ -11,15 +11,15 @@ const CATEGORIES = ['electronics', 'apparel', 'home', 'books', 'sports'];
 
 const seedDatabase = async () => {
   try {
-    console.log('⏳ Connecting to database cluster...');
+    console.log('Connecting to database cluster...');
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('🚀 Database link stabilized.');
+    console.log('Database link stabilized.');
 
-    console.log('🧹 Purging existing products collection...');
+    console.log('Purging existing products collection...');
     await Product.deleteMany({});
-    console.log('✨ Collection cleaned.');
+    console.log('Collection cleaned.');
 
-    console.log(`📦 Commencing generation of ${TOTAL_PRODUCTS} products...`);
+    console.log(`Commencing generation of ${TOTAL_PRODUCTS} products...`);
     const startTime = Date.now();
 
     for (let i = 0; i < TOTAL_PRODUCTS; i += BATCH_SIZE) {
@@ -43,18 +43,18 @@ const seedDatabase = async () => {
       await Product.insertMany(batch, { lean: true, ordered: false });
       
       const currentProgress = (((i + BATCH_SIZE) / TOTAL_PRODUCTS) * 100).toFixed(0);
-      console.log(`📥 Progress: ${currentProgress}% completed (${i + BATCH_SIZE}/${TOTAL_PRODUCTS} items synchronized)`);
+      console.log(`Progress: ${currentProgress}% completed (${i + BATCH_SIZE}/${TOTAL_PRODUCTS} items synchronized)`);
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`\n✅ Seeding operations completed successfully!`);
-    console.log(`⏱️ Total Execution Time: ${duration} seconds`);
+    console.log(`\nSeeding operations completed successfully!`);
+    console.log(`Total Execution Time: ${duration} seconds`);
 
   } catch (error) {
-    console.error('❌ Critical failure running database seed:', error);
+    console.error('Critical failure running database seed:', error);
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Disconnected smoothly from MongoDB Atlas.');
+    console.log('Disconnected smoothly from MongoDB Atlas.');
     process.exit(0);
   }
 };
