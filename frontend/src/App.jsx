@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:5000'
-  : 'https://YOUR_BACKEND_RENDER_APP_NAME.onrender.com';
+  : 'https://ecommerce-system-abkr.onrender.com';
 
 export default function App() {
   // Helper to read initial params from the URL search parameters
