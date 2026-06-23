@@ -16,7 +16,6 @@ export default function App() {
 
   const [urlParams, setUrlParams] = useState(getUrlParams);
   const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [nextCursor, setNextCursor] = useState(null);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -185,9 +184,6 @@ export default function App() {
     return JSON.stringify(query, null, 2);
   };
 
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="app-container">
@@ -197,13 +193,7 @@ export default function App() {
           <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>Simple e-commerce platform</p>
         </div>
         <div className="nav-actions">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+
           <select 
             value={urlParams.limit} 
             onChange={(e) => handleLimitChange(e.target.value)}
@@ -261,11 +251,11 @@ export default function App() {
 
           {isLoading ? (
             <div className="loading-placeholder">Loading products...</div>
-          ) : filteredProducts.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="loading-placeholder">No products found.</div>
           ) : (
             <div className="product-grid">
-              {filteredProducts.map(product => (
+              {products.map(product => (
                 <div key={product._id} className="product-card">
                   <div className="product-details">
                     <span className="product-category">{product.category}</span>
